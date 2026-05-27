@@ -5,6 +5,7 @@ final class PhalanxThreadConduitSerializer extends Phobject {
   private $questions = array();
   private $artifacts = array();
   private $replies = array();
+  private $deliveries = array();
 
   public function setQuestions(array $questions) {
     $this->questions = mgroup($questions, 'getThreadID');
@@ -18,6 +19,11 @@ final class PhalanxThreadConduitSerializer extends Phobject {
 
   public function setReplies(array $replies) {
     $this->replies = mgroup($replies, 'getThreadID');
+    return $this;
+  }
+
+  public function setDeliveries(array $deliveries) {
+    $this->deliveries = mgroup($deliveries, 'getReplyID');
     return $this;
   }
 
@@ -98,6 +104,7 @@ final class PhalanxThreadConduitSerializer extends Phobject {
         'action_kind' => $reply->getActionKind(),
         'message_text' => $reply->getMessageText(),
         'delivery_status' => $reply->getDeliveryStatus(),
+        'delivery' => $this->serializeDelivery($reply),
         'properties' => $reply->getProperties(),
         'date_created' => $reply->getDateCreated(),
         'date_modified' => $reply->getDateModified(),
@@ -105,6 +112,30 @@ final class PhalanxThreadConduitSerializer extends Phobject {
     }
 
     return $results;
+  }
+
+  private function serializeDelivery(PhalanxReply $reply) {
+    $deliveries = idx($this->deliveries, $reply->getID(), array());
+    $delivery = head($deliveries);
+    if (!$delivery) {
+      return null;
+    }
+
+    $properties = $delivery->getProperties();
+
+    return array(
+      'id' => $delivery->getID(),
+      'status' => $delivery->getStatus(),
+      'retry_mode' => $delivery->getRetryMode(),
+      'last_request_result' => $delivery->getLastRequestResult(),
+      'last_request_epoch' => $delivery->getLastRequestEpoch(),
+      'error_type' => $delivery->getErrorType(),
+      'error_code' => $delivery->getErrorCode(),
+      'attempt_count' => $delivery->getAttemptCount(),
+      'acknowledgement' => idx($properties, 'acknowledgement'),
+      'date_created' => $delivery->getDateCreated(),
+      'date_modified' => $delivery->getDateModified(),
+    );
   }
 
   private function serializeThreadProperties(PhalanxThread $thread) {

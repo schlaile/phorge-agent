@@ -124,6 +124,9 @@ user can not see.
 
 Each result includes the thread fields, `properties`, the active
 `pending_question` if one exists, current `artifacts`, and recorded `replies`.
+Replies include their delivery status and, when a callback delivery exists, a
+delivery summary with delivery ID, status, attempt count, last request result,
+error information, and acknowledgement metadata.
 
 Thread properties may include delivery configuration for outbound replies:
 

@@ -197,6 +197,8 @@ final class PhalanxThreadViewController extends PhalanxController {
     $properties = id(new PHUIPropertyListView())
       ->setUser($this->getViewer());
 
+    $deliveries = $this->loadDeliveries($replies);
+
     foreach ($replies as $reply) {
       $properties->addSectionHeader(
         pht('Reply %d', $reply->getID()),
@@ -209,6 +211,33 @@ final class PhalanxThreadViewController extends PhalanxController {
 
       if ($reply->getMessageText()) {
         $properties->addProperty(pht('Message'), $reply->getMessageText());
+      }
+
+      $delivery = head(idx($deliveries, $reply->getID(), array()));
+      if ($delivery) {
+        $properties->addProperty(
+          pht('Delivery ID'),
+          $delivery->getID());
+        $properties->addProperty(
+          pht('Attempts'),
+          $delivery->getAttemptCount());
+
+        if ($delivery->getLastRequestEpoch()) {
+          $properties->addProperty(
+            pht('Last Request'),
+            phabricator_datetime(
+              $delivery->getLastRequestEpoch(),
+              $this->getViewer()));
+        }
+
+        if ($delivery->getErrorType()) {
+          $properties->addProperty(
+            pht('Last Error'),
+            pht(
+              '%s / %s',
+              $delivery->getErrorType(),
+              $delivery->getErrorCode()));
+        }
       }
     }
 
@@ -270,6 +299,19 @@ final class PhalanxThreadViewController extends PhalanxController {
       ->setViewer($this->getViewer())
       ->withPHIDs(array($thread->getObjectPHID()))
       ->executeOne();
+  }
+
+  private function loadDeliveries(array $replies) {
+    $reply_ids = mpull($replies, 'getID');
+    if (!$reply_ids) {
+      return array();
+    }
+
+    $deliveries = id(new PhalanxDelivery())->loadAllWhere(
+      'replyID IN (%Ld) ORDER BY dateModified DESC',
+      $reply_ids);
+
+    return mgroup($deliveries, 'getReplyID');
   }
 
   private function getDeliveryStatusDisplayName($status) {

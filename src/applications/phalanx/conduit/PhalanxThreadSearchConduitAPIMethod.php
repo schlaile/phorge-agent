@@ -79,16 +79,26 @@ final class PhalanxThreadSearchConduitAPIMethod
       $replies = id(new PhalanxReply())->loadAllWhere(
         'threadID IN (%Ld) ORDER BY dateModified DESC',
         $thread_ids);
+      $reply_ids = mpull($replies, 'getID');
+      if ($reply_ids) {
+        $deliveries = id(new PhalanxDelivery())->loadAllWhere(
+          'replyID IN (%Ld) ORDER BY dateModified DESC',
+          $reply_ids);
+      } else {
+        $deliveries = array();
+      }
     } else {
       $questions = array();
       $artifacts = array();
       $replies = array();
+      $deliveries = array();
     }
 
     $serializer = id(new PhalanxThreadConduitSerializer())
       ->setQuestions($questions)
       ->setArtifacts($artifacts)
-      ->setReplies($replies);
+      ->setReplies($replies)
+      ->setDeliveries($deliveries);
 
     $data = array();
     foreach ($threads as $thread) {
