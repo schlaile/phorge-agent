@@ -24,6 +24,16 @@ The first implementation is intentionally an upsert, not an append-only event
 stream. It writes current Phorge-facing state from an external control plane
 snapshot.
 
+Internally, Phalanx normalizes this shape into small provider-neutral contract
+objects:
+
+- `PhalanxThreadSnapshot`
+- `PhalanxPendingQuestionSnapshot`
+- `PhalanxArtifactSnapshot`
+
+Conduit is the transport boundary; these snapshots are the module boundary that
+backend adapters should target.
+
 Authorization follows normal Conduit semantics, but Phalanx treats the token
 user as a concrete agent actor, not as a global integration account. Alicia can
 route different agents through different Conduit tokens, so Phorge policies can

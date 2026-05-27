@@ -38,14 +38,18 @@ final class PhalanxThreadUpsertEngine extends Phobject {
     }
 
     if ($pending_question !== null) {
-      $this->createPendingQuestion($thread, $pending_question);
+      $this->createPendingQuestion(
+        $thread,
+        PhalanxPendingQuestionSnapshot::newFromDictionary($pending_question));
     }
 
     foreach ($artifacts as $artifact) {
       if (!is_array($artifact)) {
         throw new Exception(pht('Each artifact must be a map.'));
       }
-      $this->upsertArtifact($thread, $artifact);
+      $this->upsertArtifact(
+        $thread,
+        PhalanxArtifactSnapshot::newFromDictionary($artifact));
     }
 
     return $thread;
@@ -102,25 +106,27 @@ final class PhalanxThreadUpsertEngine extends Phobject {
 
   private function createPendingQuestion(
     PhalanxThread $thread,
-    array $dict) {
+    PhalanxPendingQuestionSnapshot $snapshot) {
 
     id(new PhalanxQuestion())
       ->setThreadID($thread->getID())
       ->setIsActive(1)
-      ->setQuestionKind($this->requireString($dict, 'question_kind'))
-      ->setPrompt($this->requireString($dict, 'prompt'))
-      ->setPrimaryContactPHID(idx($dict, 'primary_contact_phid'))
-      ->setResponseChannel($this->requireString($dict, 'response_channel'))
-      ->setRequiredActionKind(
-        $this->requireString($dict, 'required_action_kind'))
-      ->setRequiredAction(idx($dict, 'required_action'))
-      ->setDefaultAction(idx($dict, 'default_action'))
-      ->setProperties(idx($dict, 'properties', array()))
+      ->setQuestionKind($snapshot->getQuestionKind())
+      ->setPrompt($snapshot->getPrompt())
+      ->setPrimaryContactPHID($snapshot->getPrimaryContactPHID())
+      ->setResponseChannel($snapshot->getResponseChannel())
+      ->setRequiredActionKind($snapshot->getRequiredActionKind())
+      ->setRequiredAction($snapshot->getRequiredAction())
+      ->setDefaultAction($snapshot->getDefaultAction())
+      ->setProperties($snapshot->getProperties())
       ->save();
   }
 
-  private function upsertArtifact(PhalanxThread $thread, array $dict) {
-    $external_id = $this->requireString($dict, 'external_artifact_id');
+  private function upsertArtifact(
+    PhalanxThread $thread,
+    PhalanxArtifactSnapshot $snapshot) {
+
+    $external_id = $snapshot->getExternalArtifactID();
 
     $artifact = id(new PhalanxArtifact())->loadOneWhere(
       'threadID = %d AND externalArtifactID = %s',
@@ -134,13 +140,13 @@ final class PhalanxThreadUpsertEngine extends Phobject {
     }
 
     $artifact
-      ->setArtifactKind($this->requireString($dict, 'artifact_kind'))
-      ->setLabel($this->requireString($dict, 'label'))
-      ->setSummary(idx($dict, 'summary'))
-      ->setFilePHID(idx($dict, 'file_phid'))
-      ->setObjectPHID(idx($dict, 'object_phid'))
-      ->setExternalRef(idx($dict, 'external_ref'))
-      ->setPayload(idx($dict, 'payload', array()))
+      ->setArtifactKind($snapshot->getArtifactKind())
+      ->setLabel($snapshot->getLabel())
+      ->setSummary($snapshot->getSummary())
+      ->setFilePHID($snapshot->getFilePHID())
+      ->setObjectPHID($snapshot->getObjectPHID())
+      ->setExternalRef($snapshot->getExternalRef())
+      ->setPayload($snapshot->getPayload())
       ->save();
   }
 
@@ -202,15 +208,6 @@ final class PhalanxThreadUpsertEngine extends Phobject {
     $value = idx($dict, $key);
     if (!is_array($value)) {
       throw new Exception(pht('Field "%s" must be a map.', $key));
-    }
-
-    return $value;
-  }
-
-  private function requireString(array $dict, $key) {
-    $value = idx($dict, $key);
-    if (!phutil_nonempty_string($value)) {
-      throw new Exception(pht('Field "%s" must be a nonempty string.', $key));
     }
 
     return $value;

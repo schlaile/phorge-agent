@@ -21,41 +21,47 @@ final class PhalanxThreadSnapshot extends Phobject {
   public static function newFromDictionary(array $dict) {
     $snapshot = new self();
 
-    $snapshot->externalThreadID = self::requireString(
+    $snapshot->externalThreadID = PhalanxSnapshotData::requireString(
       $dict,
       'external_thread_id');
-    $snapshot->objectPHID = self::requireString($dict, 'object_phid');
-    $snapshot->delegatedUserPHID = self::optionalString(
+    $snapshot->objectPHID = PhalanxSnapshotData::requireString(
+      $dict,
+      'object_phid');
+    $snapshot->delegatedUserPHID = PhalanxSnapshotData::optionalString(
       $dict,
       'delegated_user_phid');
-    $snapshot->title = self::requireString($dict, 'title');
-    $snapshot->status = self::requireString($dict, 'status');
-    $snapshot->agentLabel = self::requireString($dict, 'agent_label');
-    $snapshot->routeKind = self::optionalString($dict, 'route_kind');
-    $snapshot->permissionLevel = self::optionalString(
+    $snapshot->title = PhalanxSnapshotData::requireString($dict, 'title');
+    $snapshot->status = PhalanxSnapshotData::requireString($dict, 'status');
+    $snapshot->agentLabel = PhalanxSnapshotData::requireString(
+      $dict,
+      'agent_label');
+    $snapshot->routeKind = PhalanxSnapshotData::optionalString(
+      $dict,
+      'route_kind');
+    $snapshot->permissionLevel = PhalanxSnapshotData::optionalString(
       $dict,
       'permission_level');
-    $snapshot->requiredApprovalKind = self::optionalString(
+    $snapshot->requiredApprovalKind = PhalanxSnapshotData::optionalString(
       $dict,
       'required_approval_kind');
-    $snapshot->chatControlMode = self::optionalString(
+    $snapshot->chatControlMode = PhalanxSnapshotData::optionalString(
       $dict,
       'chat_control_mode');
-    $snapshot->reviewPolicy = self::optionalString($dict, 'review_policy');
-    $snapshot->backendKind = self::optionalString($dict, 'backend_kind');
-    $snapshot->backendThreadID = self::optionalString(
+    $snapshot->reviewPolicy = PhalanxSnapshotData::optionalString(
+      $dict,
+      'review_policy');
+    $snapshot->backendKind = PhalanxSnapshotData::optionalString(
+      $dict,
+      'backend_kind');
+    $snapshot->backendThreadID = PhalanxSnapshotData::optionalString(
       $dict,
       'backend_thread_id');
-    $snapshot->externalResumeRef = self::optionalString(
+    $snapshot->externalResumeRef = PhalanxSnapshotData::optionalString(
       $dict,
       'external_resume_ref');
-
-    $properties = idx($dict, 'properties', array());
-    if (!is_array($properties)) {
-      throw new InvalidArgumentException(
-        pht('Field "properties" must be a map.'));
-    }
-    $snapshot->properties = $properties;
+    $snapshot->properties = PhalanxSnapshotData::optionalMap(
+      $dict,
+      'properties');
 
     return $snapshot;
   }
@@ -108,25 +114,6 @@ final class PhalanxThreadSnapshot extends Phobject {
     $properties['review_policy'] = $this->reviewPolicy;
 
     return $properties;
-  }
-
-  private static function requireString(array $dict, $key) {
-    $value = idx($dict, $key);
-    if (!phutil_nonempty_string($value)) {
-      throw new InvalidArgumentException(
-        pht('Field "%s" must be a nonempty string.', $key));
-    }
-
-    return $value;
-  }
-
-  private static function optionalString(array $dict, $key) {
-    $value = idx($dict, $key);
-    if ($value === null) {
-      return null;
-    }
-
-    return self::requireString($dict, $key);
   }
 
 }
