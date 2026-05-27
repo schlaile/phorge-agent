@@ -4,6 +4,7 @@ final class PhalanxDelivery extends PhalanxDAO {
 
   const STATUS_QUEUED = 'queued';
   const STATUS_SENT = 'sent';
+  const STATUS_ACKNOWLEDGED = 'acknowledged';
   const STATUS_FAILED = 'failed';
 
   const RESULT_NONE = 'none';
@@ -96,6 +97,15 @@ final class PhalanxDelivery extends PhalanxDAO {
 
   public function getHMACKey() {
     return idx($this->getProperties(), 'hmac_key');
+  }
+
+  public function markAcknowledged(array $properties) {
+    $delivery_properties = $this->getProperties();
+    $delivery_properties['acknowledgement'] = $properties;
+
+    return $this
+      ->setStatus(self::STATUS_ACKNOWLEDGED)
+      ->setProperties($delivery_properties);
   }
 
   public function queueCall() {

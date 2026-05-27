@@ -203,4 +203,37 @@ final class PhalanxThreadSnapshotTestCase extends PhutilTestCase {
     $this->assertCaught(InvalidArgumentException::class, $caught);
   }
 
+  public function testDeliveryAckSnapshotNormalizesFields() {
+    $snapshot = PhalanxDeliveryAckSnapshot::newFromDictionary(
+      array(
+        'delivery_id' => '42',
+        'acknowledgement_ref' => 'alicia://acks/42',
+        'properties' => array(
+          'processed' => true,
+        ),
+      ));
+
+    $this->assertEqual(42, $snapshot->getDeliveryID());
+    $this->assertEqual(
+      'alicia://acks/42',
+      $snapshot->getAcknowledgementRef());
+
+    $properties = $snapshot->getProperties();
+    $this->assertEqual(true, $properties['processed']);
+  }
+
+  public function testDeliveryAckSnapshotRejectsBadID() {
+    $caught = null;
+    try {
+      PhalanxDeliveryAckSnapshot::newFromDictionary(
+        array(
+          'delivery_id' => '0',
+        ));
+    } catch (Exception $ex) {
+      $caught = $ex;
+    }
+
+    $this->assertCaught(InvalidArgumentException::class, $caught);
+  }
+
 }

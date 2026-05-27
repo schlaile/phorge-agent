@@ -14,15 +14,9 @@ final class PhalanxReplySnapshot extends Phobject {
 
     $thread_id = idx($dict, 'thread_id');
     if ($thread_id !== null) {
-      if (!is_int($thread_id) && !ctype_digit((string)$thread_id)) {
-        throw new InvalidArgumentException(
-          pht('Field "thread_id" must be an integer.'));
-      }
-      $snapshot->threadID = (int)$thread_id;
-      if ($snapshot->threadID <= 0) {
-        throw new InvalidArgumentException(
-          pht('Field "thread_id" must be a positive integer.'));
-      }
+      $snapshot->threadID = PhalanxSnapshotData::requirePositiveInteger(
+        $dict,
+        'thread_id');
     }
 
     $snapshot->externalThreadID = PhalanxSnapshotData::optionalString(

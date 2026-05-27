@@ -210,6 +210,26 @@ Replies use a delivery-state model inspired by chat read receipts:
 - `acknowledged`: the external control plane confirmed processing.
 - `failed`: delivery failed, but the reply remains stored and pollable.
 
+When Phalanx delivers a reply callback, it includes the delivery identifier in
+the `X-Phalanx-Delivery-ID` header. If the receiving control plane processes
+the delivery asynchronously, it can later confirm processing with:
+
+```text
+phalanx.delivery.ack
+```
+
+Example acknowledgement:
+
+```json
+{
+  "delivery_id": 42,
+  "acknowledgement_ref": "alicia://acks/42",
+  "properties": {
+    "processed": true
+  }
+}
+```
+
 ```json
 {
   "external_thread_id": "session-123",

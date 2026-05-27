@@ -31,6 +31,22 @@ final class PhalanxSnapshotData extends Phobject {
     return $value;
   }
 
+  public static function requirePositiveInteger(array $dict, $key) {
+    $value = idx($dict, $key);
+    if (!is_int($value) && !ctype_digit((string)$value)) {
+      throw new InvalidArgumentException(
+        pht('Field "%s" must be an integer.', $key));
+    }
+
+    $value = (int)$value;
+    if ($value <= 0) {
+      throw new InvalidArgumentException(
+        pht('Field "%s" must be a positive integer.', $key));
+    }
+
+    return $value;
+  }
+
   private function __construct() {
   }
 
