@@ -101,6 +101,30 @@ Return shape:
 }
 ```
 
+## Thread Search
+
+External control planes can read Phorge's current view of agent work with:
+
+```text
+phalanx.thread.search
+```
+
+Supported filters:
+
+- `ids`
+- `external_thread_ids`
+- `object_phids`
+- `statuses`
+- `limit`
+- `offset`
+
+The method returns visible threads only. Visibility is determined by the target
+`object_phid`, so Phalanx does not expose thread metadata for objects the token
+user can not see.
+
+Each result includes the thread fields, `properties`, the active
+`pending_question` if one exists, and current `artifacts`.
+
 ## Frame Append
 
 External control plane appends structured timeline frames.
