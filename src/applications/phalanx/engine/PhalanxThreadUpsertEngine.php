@@ -52,14 +52,11 @@ final class PhalanxThreadUpsertEngine extends Phobject {
   }
 
   private function upsertThread(array $dict) {
-    $external_id = $this->requireString($dict, 'external_thread_id');
-    $object_phid = $this->requireString($dict, 'object_phid');
-    $delegated_user_phid = idx($dict, 'delegated_user_phid');
-    if ($delegated_user_phid !== null) {
-      $delegated_user_phid = $this->requireString(
-        $dict,
-        'delegated_user_phid');
-    }
+    $snapshot = PhalanxThreadSnapshot::newFromDictionary($dict);
+
+    $external_id = $snapshot->getExternalThreadID();
+    $object_phid = $snapshot->getObjectPHID();
+    $delegated_user_phid = $snapshot->getDelegatedUserPHID();
 
     $object = $this->loadEditableObject($object_phid);
 
@@ -78,30 +75,16 @@ final class PhalanxThreadUpsertEngine extends Phobject {
       $thread->setExternalThreadID($external_id);
     }
 
-    $properties = idx($dict, 'properties', array());
-    if (!is_array($properties)) {
-      throw new Exception(pht('Field "properties" must be a map.'));
-    }
-
-    $properties['agent_actor_phid'] = $this->getViewer()->getPHID();
-    $properties['delegated_user_phid'] = $delegated_user_phid;
-    $properties['route_kind'] = idx($dict, 'route_kind');
-    $properties['permission_level'] = idx($dict, 'permission_level');
-    $properties['required_approval_kind'] = idx(
-      $dict,
-      'required_approval_kind');
-    $properties['chat_control_mode'] = idx($dict, 'chat_control_mode');
-    $properties['review_policy'] = idx($dict, 'review_policy');
-
     $thread
       ->setObjectPHID($object_phid)
-      ->setTitle($this->requireString($dict, 'title'))
-      ->setStatus($this->requireString($dict, 'status'))
-      ->setAgentLabel($this->requireString($dict, 'agent_label'))
-      ->setBackendKind(idx($dict, 'backend_kind'))
-      ->setBackendThreadID(idx($dict, 'backend_thread_id'))
-      ->setExternalResumeRef(idx($dict, 'external_resume_ref'))
-      ->setProperties($properties)
+      ->setTitle($snapshot->getTitle())
+      ->setStatus($snapshot->getStatus())
+      ->setAgentLabel($snapshot->getAgentLabel())
+      ->setBackendKind($snapshot->getBackendKind())
+      ->setBackendThreadID($snapshot->getBackendThreadID())
+      ->setExternalResumeRef($snapshot->getExternalResumeRef())
+      ->setProperties(
+        $snapshot->newThreadProperties($this->getViewer()->getPHID()))
       ->save();
 
     return $thread;
