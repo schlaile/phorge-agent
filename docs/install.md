@@ -23,6 +23,16 @@ Then visit:
 /phalanx/
 ```
 
+## Conduit User
+
+External control planes should call Phalanx with a Conduit token owned by a
+dedicated Phorge user, such as `phorge-agent`. Phalanx evaluates writes as that
+user.
+
+For `phalanx.thread.upsert`, the token user must have edit permission on the
+target `object_phid`. Grant this user access only to the projects, spaces, or
+objects where agent work should be allowed.
+
 ## Library Map
 
 The initial skeleton ships with a small hand-maintained

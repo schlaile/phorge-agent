@@ -55,7 +55,7 @@ final class PhalanxThreadUpsertEngine extends Phobject {
     $external_id = $this->requireString($dict, 'external_thread_id');
     $object_phid = $this->requireString($dict, 'object_phid');
 
-    $this->loadVisibleObject($object_phid);
+    $this->loadEditableObject($object_phid);
 
     $thread = id(new PhalanxThreadQuery())
       ->withExternalThreadIDs(array($external_id))
@@ -135,9 +135,10 @@ final class PhalanxThreadUpsertEngine extends Phobject {
       ->save();
   }
 
-  private function loadVisibleObject($phid) {
+  private function loadEditableObject($phid) {
+    $viewer = $this->getViewer();
     $object = id(new PhabricatorObjectQuery())
-      ->setViewer($this->getViewer())
+      ->setViewer($viewer)
       ->withPHIDs(array($phid))
       ->executeOne();
 
@@ -145,6 +146,19 @@ final class PhalanxThreadUpsertEngine extends Phobject {
       throw new Exception(
         pht(
           'No visible Phorge object exists with PHID "%s".',
+          $phid));
+    }
+
+    $can_edit = PhabricatorPolicyFilter::hasCapability(
+      $viewer,
+      $object,
+      PhabricatorPolicyCapability::CAN_EDIT);
+
+    if (!$can_edit) {
+      throw new Exception(
+        pht(
+          'You do not have permission to attach Phalanx threads to object '.
+          '"%s".',
           $phid));
     }
 

@@ -24,6 +24,12 @@ The first implementation is intentionally an upsert, not an append-only event
 stream. It writes current Phorge-facing state from an external control plane
 snapshot.
 
+Authorization follows normal Conduit semantics: the method runs as the user
+bound to the Conduit token. The token user must be able to edit the target
+`object_phid`; visibility alone is not enough. In the Alicia integration, this
+means the `phorge-agent` Phorge user should receive the same project or object
+permissions that Alicia is allowed to act on.
+
 External control plane creates or updates a thread for an object.
 
 ```json
