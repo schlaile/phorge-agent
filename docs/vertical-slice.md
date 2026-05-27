@@ -66,6 +66,7 @@ The first implementation now provides:
 - a library-local SQL patch list,
 - a compact Maniphest curtain panel for attached Phalanx threads,
 - a simple `/phalanx/thread/{id}/` detail view,
+- a reply form on the thread detail view for active questions,
 - a `phalanx.thread.upsert` Conduit method,
 - a `phalanx.thread.search` Conduit method for polling visible thread state,
 - a `phalanx.thread.reply` Conduit method for recording user replies and

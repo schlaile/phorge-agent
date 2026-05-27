@@ -15,6 +15,36 @@ final class PhalanxThreadViewController extends PhalanxController {
       return new Aphront404Response();
     }
 
+    $object = $this->loadVisibleObject($thread);
+    if (!$object) {
+      return new Aphront404Response();
+    }
+
+    $can_reply = PhabricatorPolicyFilter::hasCapability(
+      $viewer,
+      $object,
+      PhabricatorPolicyCapability::CAN_EDIT);
+
+    $reply_error = null;
+    if ($request->isFormPost()) {
+      $message = $request->getStr('message_text');
+      if (!phutil_nonempty_string($message)) {
+        $reply_error = pht('Reply text is required.');
+      } else {
+        id(new PhalanxThreadReplyEngine())
+          ->setViewer($viewer)
+          ->replyFromDictionary(array(
+            'thread_id' => $thread->getID(),
+            'action_kind' => 'delegate_instruction',
+            'message_text' => $message,
+            'close_question' => true,
+          ));
+
+        return id(new AphrontRedirectResponse())
+          ->setURI($thread->getURI());
+      }
+    }
+
     $title = $thread->getTitle();
 
     $crumbs = $this->buildApplicationCrumbs();
@@ -54,7 +84,8 @@ final class PhalanxThreadViewController extends PhalanxController {
       ->setBackground(PHUIObjectBoxView::BLUE_PROPERTY)
       ->addPropertyList($properties);
 
-    $question_box = $this->buildQuestionBox($thread);
+    $question_box = $this->buildQuestionBox($thread, $can_reply, $reply_error);
+    $reply_box = $this->buildReplyBox($thread);
     $artifact_box = $this->buildArtifactBox($thread);
 
     $view = id(new PHUITwoColumnView())
@@ -62,6 +93,7 @@ final class PhalanxThreadViewController extends PhalanxController {
       ->setMainColumn(array(
         $object_box,
         $question_box,
+        $reply_box,
         $artifact_box,
       ));
 
@@ -71,7 +103,11 @@ final class PhalanxThreadViewController extends PhalanxController {
       ->appendChild($view);
   }
 
-  private function buildQuestionBox(PhalanxThread $thread) {
+  private function buildQuestionBox(
+    PhalanxThread $thread,
+    $can_reply,
+    $reply_error) {
+
     $question = id(new PhalanxQuestion())->loadOneWhere(
       'threadID = %d AND isActive = %d ORDER BY dateModified DESC',
       $thread->getID(),
@@ -106,8 +142,78 @@ final class PhalanxThreadViewController extends PhalanxController {
         $question->getRequiredAction());
     }
 
+    $content = array($properties);
+
+    if ($reply_error !== null) {
+      $content[] = id(new PHUIInfoView())
+        ->setSeverity(PHUIInfoView::SEVERITY_ERROR)
+        ->setErrors(array($reply_error));
+    }
+
+    if ($can_reply) {
+      $form = id(new AphrontFormView())
+        ->setUser($this->getViewer())
+        ->setAction($thread->getURI())
+        ->appendChild(
+          id(new AphrontFormTextAreaControl())
+            ->setName('message_text')
+            ->setLabel(pht('Reply'))
+            ->setHeight(AphrontFormTextAreaControl::HEIGHT_SHORT))
+        ->appendChild(
+          id(new AphrontFormSubmitControl())
+            ->setValue(pht('Send Reply')));
+
+      $content[] = $form;
+    } else {
+      $content[] = id(new PHUIInfoView())
+        ->setSeverity(PHUIInfoView::SEVERITY_NOTICE)
+        ->setErrors(
+          array(
+            pht('You can view this question, but can not reply to it.'),
+          ));
+    }
+
     return id(new PHUIObjectBoxView())
       ->setHeaderText(pht('Pending Question'))
+      ->setBackground(PHUIObjectBoxView::BLUE_PROPERTY)
+      ->appendChild($content);
+  }
+
+  private function buildReplyBox(PhalanxThread $thread) {
+    $replies = id(new PhalanxReply())->loadAllWhere(
+      'threadID = %d ORDER BY dateModified DESC LIMIT 20',
+      $thread->getID());
+
+    if (!$replies) {
+      $content = id(new PHUIInfoView())
+        ->setSeverity(PHUIInfoView::SEVERITY_NODATA)
+        ->setErrors(array(pht('No replies.')));
+
+      return id(new PHUIObjectBoxView())
+        ->setHeaderText(pht('Replies'))
+        ->appendChild($content);
+    }
+
+    $properties = id(new PHUIPropertyListView())
+      ->setUser($this->getViewer());
+
+    foreach ($replies as $reply) {
+      $properties->addSectionHeader(
+        pht('Reply %d', $reply->getID()),
+        'fa-reply');
+      $properties->addProperty(pht('Author'), $reply->getAuthorPHID());
+      $properties->addProperty(pht('Action'), $reply->getActionKind());
+      $properties->addProperty(
+        pht('Delivery'),
+        $this->getDeliveryStatusDisplayName($reply->getDeliveryStatus()));
+
+      if ($reply->getMessageText()) {
+        $properties->addProperty(pht('Message'), $reply->getMessageText());
+      }
+    }
+
+    return id(new PHUIObjectBoxView())
+      ->setHeaderText(pht('Replies'))
       ->setBackground(PHUIObjectBoxView::BLUE_PROPERTY)
       ->addPropertyList($properties);
   }
@@ -157,6 +263,25 @@ final class PhalanxThreadViewController extends PhalanxController {
       ->setHeaderText(pht('Artifacts'))
       ->setBackground(PHUIObjectBoxView::BLUE_PROPERTY)
       ->addPropertyList($properties);
+  }
+
+  private function loadVisibleObject(PhalanxThread $thread) {
+    return id(new PhabricatorObjectQuery())
+      ->setViewer($this->getViewer())
+      ->withPHIDs(array($thread->getObjectPHID()))
+      ->executeOne();
+  }
+
+  private function getDeliveryStatusDisplayName($status) {
+    $map = array(
+      PhalanxReply::DELIVERY_RECORDED => pht('Recorded'),
+      PhalanxReply::DELIVERY_QUEUED => pht('Queued'),
+      PhalanxReply::DELIVERY_SENT => pht('Sent'),
+      PhalanxReply::DELIVERY_ACKNOWLEDGED => pht('Acknowledged'),
+      PhalanxReply::DELIVERY_FAILED => pht('Failed'),
+    );
+
+    return idx($map, $status, $status);
   }
 
 }
