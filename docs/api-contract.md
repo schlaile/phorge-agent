@@ -24,11 +24,28 @@ The first implementation is intentionally an upsert, not an append-only event
 stream. It writes current Phorge-facing state from an external control plane
 snapshot.
 
-Authorization follows normal Conduit semantics: the method runs as the user
-bound to the Conduit token. The token user must be able to edit the target
-`object_phid`; visibility alone is not enough. In the Alicia integration, this
-means the `phorge-agent` Phorge user should receive the same project or object
-permissions that Alicia is allowed to act on.
+Authorization follows normal Conduit semantics, but Phalanx treats the token
+user as a concrete agent actor, not as a global integration account. Alicia can
+route different agents through different Conduit tokens, so Phorge policies can
+distinguish implementers, reviewers, red-team agents, release agents, and other
+roles.
+
+For delegated work, the thread payload should include `delegated_user_phid`.
+Phalanx then applies the local capability check as an intersection:
+
+- the agent actor from the Conduit token must be able to edit `object_phid`,
+- the delegated user must also be able to edit `object_phid`.
+
+This prevents Alicia from using an agent token to expand a human user's rights.
+If a later action needs stronger authority, such as landing, releasing,
+deploying, or sending external mail, the external control plane should surface a
+required action or approval instead of silently proceeding.
+
+The first implementation enforces edit permission on `object_phid` for the
+agent actor and, when `delegated_user_phid` is present, for the delegated user.
+Higher-level capabilities such as `merge_approval`, `release_approval`, and
+`security_approval` are represented in the provider-neutral contract first and
+can grow into stricter Phorge-side checks over time.
 
 External control plane creates or updates a thread for an object.
 
@@ -36,13 +53,31 @@ External control plane creates or updates a thread for an object.
 {
   "external_thread_id": "session-123",
   "object_phid": "PHID-TASK-abc",
+  "delegated_user_phid": "PHID-USER-owner",
   "title": "Implement payment fallback",
   "status": "awaiting_chat",
   "agent_label": "alicia",
+  "route_kind": "primary_contact",
+  "permission_level": "reply",
+  "required_approval_kind": null,
+  "chat_control_mode": "delegate_scoped",
+  "review_policy": "mandatory_review_on_delegate",
   "backend_kind": "codex_exec",
   "backend_thread_id": "thread-xyz"
 }
 ```
+
+Suggested routing and approval fields mirror Alicia's existing session model:
+
+- `delegated_user_phid`: user on whose behalf the agent is acting.
+- `route_kind`: `primary_contact`, `allowed_responder`, `required_approver`,
+  or `watcher`.
+- `permission_level`: `inform`, `reply`, or `approve`.
+- `required_approval_kind`: `merge_approval`, `release_approval`,
+  `security_approval`, or `external_send_approval`.
+- `chat_control_mode`: `visibility_only`, `control_limited`, or
+  `delegate_scoped`.
+- `review_policy`: for example `mandatory_review_on_delegate`.
 
 Return shape:
 
@@ -126,5 +161,8 @@ Phorge sends user replies or control actions back to the external control plane.
 - Phorge should store enough state to render and audit the thread.
 - Runtime-specific transcripts may stay in the external control plane.
 - The external control plane remains responsible for execution policy.
-- Phorge remains responsible for Phorge object visibility and local user
-  permissions.
+- Phorge remains responsible for object visibility, local user permissions, and
+  approval records.
+- Agent permissions and delegated-user permissions should combine by
+  intersection. Approval and escalation should be explicit objects or required
+  actions, not implicit rights expansion through an agent.

@@ -23,15 +23,21 @@ Then visit:
 /phalanx/
 ```
 
-## Conduit User
+## Conduit Users
 
-External control planes should call Phalanx with a Conduit token owned by a
-dedicated Phorge user, such as `phorge-agent`. Phalanx evaluates writes as that
-user.
+External control planes should call Phalanx with Conduit tokens owned by the
+Phorge users that represent the concrete agent actors. A role-orchestrating
+system such as Alicia can use different tokens for different agent roles, for
+example implementer, reviewer, red-team, release, or operations agents.
 
 For `phalanx.thread.upsert`, the token user must have edit permission on the
-target `object_phid`. Grant this user access only to the projects, spaces, or
-objects where agent work should be allowed.
+target `object_phid`. If the payload also includes `delegated_user_phid`, that
+delegated user must have edit permission as well. This keeps agent work scoped
+to the intersection of agent rights and user rights.
+
+A generic `phorge-agent` user can still be useful for local development or
+fallback automation, but it is not the preferred production authorization model
+for multi-role agents.
 
 ## Library Map
 

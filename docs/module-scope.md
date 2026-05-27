@@ -36,6 +36,8 @@ It should add value only where existing tools are too coarse:
 - typed agent work products,
 - backend and resume references,
 - delegated-control policy,
+- agent-actor and delegated-user policy intersection,
+- explicit approval escalation for high-impact actions,
 - structured timeline frames instead of log or comment noise,
 - object-spanning agent work across tasks, diffs, repositories, builds, and
   supporting artifacts.
@@ -101,10 +103,25 @@ Suggested action kinds:
 - `reply_in_chat`
 - `open_or_reply_chat`
 - `approve_review`
+- `approval_required`
 - `assign_harness`
 - `prepare_workspace`
 - `resume_session`
 - `stop_session`
+
+Required actions should carry enough routing information to distinguish soft
+questions from hard approvals. A product clarification may route to a primary
+contact; a merge, release, security, or external-send approval must route to an
+appropriate approver and remain auditable.
+
+Suggested routing fields:
+
+- `delegated_user_phid`
+- `route_kind`
+- `permission_level`
+- `required_approval_kind`
+- `chat_control_mode`
+- `review_policy`
 
 ## Artifacts
 

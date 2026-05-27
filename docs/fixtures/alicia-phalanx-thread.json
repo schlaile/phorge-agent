@@ -2,9 +2,15 @@
   "thread": {
     "external_thread_id": "alicia-session-123",
     "object_phid": "PHID-TASK-example",
+    "delegated_user_phid": "PHID-USER-owner",
     "title": "Investigate payment fallback",
     "status": "awaiting_chat",
     "agent_label": "alicia",
+    "route_kind": "primary_contact",
+    "permission_level": "reply",
+    "required_approval_kind": null,
+    "chat_control_mode": "delegate_scoped",
+    "review_policy": "mandatory_review_on_delegate",
     "backend_kind": "codex_exec",
     "backend_thread_id": "codex-thread-xyz",
     "external_resume_ref": "alicia://plans/42/sessions/alicia-session-123"

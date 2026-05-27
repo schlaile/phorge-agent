@@ -54,8 +54,19 @@ final class PhalanxThreadUpsertEngine extends Phobject {
   private function upsertThread(array $dict) {
     $external_id = $this->requireString($dict, 'external_thread_id');
     $object_phid = $this->requireString($dict, 'object_phid');
+    $delegated_user_phid = idx($dict, 'delegated_user_phid');
+    if ($delegated_user_phid !== null) {
+      $delegated_user_phid = $this->requireString(
+        $dict,
+        'delegated_user_phid');
+    }
 
-    $this->loadEditableObject($object_phid);
+    $object = $this->loadEditableObject($object_phid);
+
+    if ($delegated_user_phid !== null) {
+      $delegated_user = $this->loadDelegatedUser($delegated_user_phid);
+      $this->requireObjectEditCapability($delegated_user, $object);
+    }
 
     $thread = id(new PhalanxThreadQuery())
       ->withExternalThreadIDs(array($external_id))
@@ -67,6 +78,21 @@ final class PhalanxThreadUpsertEngine extends Phobject {
       $thread->setExternalThreadID($external_id);
     }
 
+    $properties = idx($dict, 'properties', array());
+    if (!is_array($properties)) {
+      throw new Exception(pht('Field "properties" must be a map.'));
+    }
+
+    $properties['agent_actor_phid'] = $this->getViewer()->getPHID();
+    $properties['delegated_user_phid'] = $delegated_user_phid;
+    $properties['route_kind'] = idx($dict, 'route_kind');
+    $properties['permission_level'] = idx($dict, 'permission_level');
+    $properties['required_approval_kind'] = idx(
+      $dict,
+      'required_approval_kind');
+    $properties['chat_control_mode'] = idx($dict, 'chat_control_mode');
+    $properties['review_policy'] = idx($dict, 'review_policy');
+
     $thread
       ->setObjectPHID($object_phid)
       ->setTitle($this->requireString($dict, 'title'))
@@ -75,7 +101,7 @@ final class PhalanxThreadUpsertEngine extends Phobject {
       ->setBackendKind(idx($dict, 'backend_kind'))
       ->setBackendThreadID(idx($dict, 'backend_thread_id'))
       ->setExternalResumeRef(idx($dict, 'external_resume_ref'))
-      ->setProperties(idx($dict, 'properties', array()))
+      ->setProperties($properties)
       ->save();
 
     return $thread;
@@ -149,20 +175,44 @@ final class PhalanxThreadUpsertEngine extends Phobject {
           $phid));
     }
 
+    $this->requireObjectEditCapability($viewer, $object);
+
+    return $object;
+  }
+
+  private function loadDelegatedUser($phid) {
+    $user = id(new PhabricatorPeopleQuery())
+      ->setViewer(PhabricatorUser::getOmnipotentUser())
+      ->withPHIDs(array($phid))
+      ->executeOne();
+
+    if (!$user) {
+      throw new Exception(
+        pht(
+          'No delegated Phorge user exists with PHID "%s".',
+          $phid));
+    }
+
+    return $user;
+  }
+
+  private function requireObjectEditCapability(
+    PhabricatorUser $user,
+    $object) {
+
     $can_edit = PhabricatorPolicyFilter::hasCapability(
-      $viewer,
+      $user,
       $object,
       PhabricatorPolicyCapability::CAN_EDIT);
 
     if (!$can_edit) {
       throw new Exception(
         pht(
-          'You do not have permission to attach Phalanx threads to object '.
-          '"%s".',
-          $phid));
+          'User "%s" does not have permission to attach Phalanx threads to '.
+          'object "%s".',
+          $user->getPHID(),
+          $object->getPHID()));
     }
-
-    return $object;
   }
 
   private function requireMap(array $dict, $key) {
