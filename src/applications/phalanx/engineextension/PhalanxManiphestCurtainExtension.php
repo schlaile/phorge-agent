@@ -30,6 +30,9 @@ final class PhalanxManiphestCurtainExtension
         ->setSeverity(PHUIInfoView::SEVERITY_NODATA)
         ->setErrors(array(pht('No active Phalanx threads.')));
     } else {
+      $questions = $this->loadQuestions($threads);
+      $replies = $this->loadReplies($threads);
+
       $content = id(new PHUIPropertyListView())
         ->setUser($viewer)
         ->setStacked(true);
@@ -55,6 +58,24 @@ final class PhalanxManiphestCurtainExtension
             pht('Resume'),
             $thread->getExternalResumeRef());
         }
+
+        $question = head(idx($questions, $thread->getID(), array()));
+        if ($question) {
+          $content->addProperty(pht('Question'), $question->getPrompt());
+          $content->addProperty(
+            pht('Required Action'),
+            $question->getRequiredActionKind());
+        }
+
+        $reply = head(idx($replies, $thread->getID(), array()));
+        if ($reply) {
+          $content->addProperty(
+            pht('Latest Reply'),
+            $this->getReplySummary($reply));
+          $content->addProperty(
+            pht('Delivery'),
+            $this->getDeliveryStatusDisplayName($reply->getDeliveryStatus()));
+        }
       }
     }
 
@@ -62,6 +83,51 @@ final class PhalanxManiphestCurtainExtension
       ->setHeaderText(pht('Phalanx'))
       ->setOrder(16000)
       ->appendChild($content);
+  }
+
+  private function loadQuestions(array $threads) {
+    try {
+      $questions = id(new PhalanxQuestion())->loadAllWhere(
+        'threadID IN (%Ld) AND isActive = %d ORDER BY dateModified DESC',
+        mpull($threads, 'getID'),
+        1);
+    } catch (AphrontQueryException $ex) {
+      $questions = array();
+    }
+
+    return mgroup($questions, 'getThreadID');
+  }
+
+  private function loadReplies(array $threads) {
+    try {
+      $replies = id(new PhalanxReply())->loadAllWhere(
+        'threadID IN (%Ld) ORDER BY dateModified DESC',
+        mpull($threads, 'getID'));
+    } catch (AphrontQueryException $ex) {
+      $replies = array();
+    }
+
+    return mgroup($replies, 'getThreadID');
+  }
+
+  private function getReplySummary(PhalanxReply $reply) {
+    if ($reply->getMessageText()) {
+      return $reply->getMessageText();
+    }
+
+    return $reply->getActionKind();
+  }
+
+  private function getDeliveryStatusDisplayName($status) {
+    $map = array(
+      PhalanxReply::DELIVERY_RECORDED => pht('Recorded'),
+      PhalanxReply::DELIVERY_QUEUED => pht('Queued'),
+      PhalanxReply::DELIVERY_SENT => pht('Sent'),
+      PhalanxReply::DELIVERY_ACKNOWLEDGED => pht('Acknowledged'),
+      PhalanxReply::DELIVERY_FAILED => pht('Failed'),
+    );
+
+    return idx($map, $status, $status);
   }
 
 }

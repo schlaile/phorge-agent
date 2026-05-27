@@ -64,7 +64,8 @@ The first implementation now provides:
 
 - `PhalanxThread`, `PhalanxQuestion`, and `PhalanxArtifact` storage objects,
 - a library-local SQL patch list,
-- a compact Maniphest curtain panel for attached Phalanx threads,
+- a compact Maniphest curtain panel for attached Phalanx threads, active
+  questions, latest replies, and delivery status,
 - a simple `/phalanx/thread/{id}/` detail view,
 - a reply form on the thread detail view for active questions,
 - a `phalanx.thread.upsert` Conduit method,
