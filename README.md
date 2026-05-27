@@ -18,6 +18,39 @@ model.
   first-class UI concepts.
 - Keep runtime-specific details outside this module.
 
+## Why Not Existing Phorge Tools?
+
+Phorge already has strong tools for work coordination:
+
+- Maniphest tracks tasks, priorities, projects, owners, and status.
+- Differential tracks code review, diffs, reviewers, and inline discussion.
+- Conpherence supports human conversation.
+- Feed and object transactions provide audit history.
+- Harbormaster tracks builds and checks.
+- Herald automates workflow rules.
+- Files, Pastes, and related objects can store supporting material.
+- Conduit lets external systems integrate with Phorge.
+
+`phorge-agent` should not duplicate these tools. It should fill a narrower gap:
+delegated, resumable agent work that needs explicit state, control, and work
+products.
+
+An `AgentThread` answers questions that ordinary comments and chats do not
+answer well:
+
+- Is the agent running, waiting, blocked, resumable, or done?
+- What question is currently blocking progress?
+- Who is expected to answer it?
+- What action is required before work can continue?
+- What did the agent produce?
+- Which external backend session or resume context is this tied to?
+- Who may read, answer, delegate, approve, resume, or stop the work?
+
+In short:
+
+> An AgentThread is a Phorge-native control and audit object for delegated,
+> resumable agent work.
+
 ## Non-Goals
 
 - Running agents directly.

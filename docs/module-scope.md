@@ -8,6 +8,43 @@ Phorge object.
 The thread is not the agent runtime. It is the user-facing and auditable record
 of what an external agent control plane is doing.
 
+## Relationship to Existing Phorge Tools
+
+`phorge-agent` should not replace Maniphest, Differential, Conpherence,
+Harbormaster, Feed, Herald, Files, Pastes, or Conduit.
+
+Those tools already model important parts of work:
+
+- Maniphest says why work exists.
+- Differential says what code is under review.
+- Harbormaster says whether checks ran and passed.
+- Conpherence supports human discussion.
+- Feed and transactions record object history.
+- Herald automates rule-based workflow.
+- Files and Pastes hold supporting material.
+- Conduit connects external systems.
+
+An `AgentThread` should connect these concepts around one missing object:
+delegated, resumable agent work.
+
+It should add value only where existing tools are too coarse:
+
+- explicit session state,
+- pending questions with routing,
+- required actions,
+- typed agent work products,
+- backend and resume references,
+- delegated-control policy,
+- structured timeline frames instead of log or comment noise,
+- object-spanning agent work across tasks, diffs, repositories, builds, and
+  supporting artifacts.
+
+If an interaction is just a human discussion, Conpherence is enough. If it is
+just a task update, Maniphest comments are enough. If it is just a build result,
+Harbormaster is enough. `AgentThread` is justified only when external agent work
+needs to be observed, resumed, answered, approved, or stopped as an ongoing
+unit.
+
 ## Candidate Objects
 
 - `AgentThread`
