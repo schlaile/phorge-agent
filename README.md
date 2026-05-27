@@ -1,8 +1,8 @@
-# phorge-agent
+# Phalanx
 
-Agent threads and work products for Phorge.
+Agent formations and work products for Phorge.
 
-`phorge-agent` is intended to become a provider-neutral Phorge module for
+Phalanx is intended to become a provider-neutral Phorge module for
 displaying, controlling, and auditing agentic work produced by external systems.
 It is not an AI runtime. Systems such as Alicia, MCP-backed agents, or other
 automation services should be able to attach to the same Phorge-native thread
@@ -32,11 +32,11 @@ Phorge already has strong tools for work coordination:
   reviewable artifacts.
 - Conduit lets external systems integrate with Phorge.
 
-`phorge-agent` should not duplicate these tools. It should fill a narrower gap:
+Phalanx should not duplicate these tools. It should fill a narrower gap:
 delegated, resumable agent work that needs explicit state, control, and work
 products.
 
-An `AgentThread` answers questions that ordinary comments and chats do not
+A Phalanx thread answers questions that ordinary comments and chats do not
 answer well:
 
 - Is the agent running, waiting, blocked, resumable, or done?
@@ -49,7 +49,7 @@ answer well:
 
 In short:
 
-> An AgentThread is a Phorge-native control and audit object for delegated,
+> A PhalanxThread is a Phorge-native control and audit object for delegated,
 > resumable agent work.
 
 ## Non-Goals
@@ -64,7 +64,7 @@ In short:
 This repository is an early design and module-planning space. The first concrete
 work is to define:
 
-- an `AgentThread` object model,
+- a `PhalanxThread` object model,
 - timeline frame types,
 - an API contract for external agent control planes,
 - the minimal Phorge core hooks needed for a clean module.
@@ -77,9 +77,14 @@ work is to define:
 - [API Contract Sketch](docs/api-contract.md)
 - [Installation](docs/install.md)
 
+## Repository Name
+
+The repository is named `phorge-agent` so it is easy to find. The Phorge module
+and UI are named **Phalanx**.
+
 ## Relationship to Alicia
 
 Alicia is expected to be the first backend integration, but this module should
 not be Alicia-specific. Alicia owns planning, policy, harness/runtime selection,
-session execution, and artifact production. `phorge-agent` should own the
-Phorge-native representation of that work.
+session execution, and artifact production. Phalanx should own the Phorge-native
+representation of that work.

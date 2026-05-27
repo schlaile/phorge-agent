@@ -1,13 +1,13 @@
 <?php
 
-final class PhorgeAgentApplication extends PhabricatorApplication {
+final class PhalanxApplication extends PhabricatorApplication {
 
   public function getName() {
-    return pht('Agents');
+    return pht('Phalanx');
   }
 
   public function getBaseURI() {
-    return '/agent/';
+    return '/phalanx/';
   }
 
   public function getIcon() {
@@ -15,7 +15,7 @@ final class PhorgeAgentApplication extends PhabricatorApplication {
   }
 
   public function getShortDescription() {
-    return pht('Agent Threads and Work Products');
+    return pht('Agent Formations and Work Products');
   }
 
   public function getApplicationGroup() {
@@ -24,8 +24,8 @@ final class PhorgeAgentApplication extends PhabricatorApplication {
 
   public function getRoutes() {
     return array(
-      '/agent/' => array(
-        '' => 'PhorgeAgentHomeController',
+      '/phalanx/' => array(
+        '' => 'PhalanxHomeController',
       ),
     );
   }

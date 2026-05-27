@@ -1,12 +1,12 @@
 <?php
 
-abstract class PhorgeAgentController extends PhabricatorController {
+abstract class PhalanxController extends PhabricatorController {
 
   protected function buildApplicationCrumbs() {
     $crumbs = parent::buildApplicationCrumbs();
 
     $crumbs->addTextCrumb(
-      pht('Agent Threads'),
+      pht('Phalanx'),
       $this->getApplicationURI());
 
     return $crumbs;

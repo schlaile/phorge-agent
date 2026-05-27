@@ -1,6 +1,6 @@
 # API Contract Sketch
 
-This document sketches the contract between Phorge Agent and an external agent
+This document sketches the contract between Phalanx and an external agent
 control plane such as Alicia.
 
 The contract should remain provider-neutral.

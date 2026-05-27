@@ -2,7 +2,7 @@
 
 ## Core Concept
 
-An `AgentThread` is a Phorge-native representation of agentic work attached to a
+`PhalanxThread` is a Phorge-native representation of agentic work attached to a
 Phorge object.
 
 The thread is not the agent runtime. It is the user-facing and auditable record
@@ -10,7 +10,7 @@ of what an external agent control plane is doing.
 
 ## Relationship to Existing Phorge Tools
 
-`phorge-agent` should not replace Maniphest, Differential, Conpherence,
+Phalanx should not replace Maniphest, Differential, Conpherence,
 Harbormaster, Feed, Herald, Files, Pastes, Pholio, or Conduit.
 
 Those tools already model important parts of work:
@@ -25,7 +25,7 @@ Those tools already model important parts of work:
 - Pholio stores and reviews visual mockups.
 - Conduit connects external systems.
 
-An `AgentThread` should connect these concepts around one missing object:
+`PhalanxThread` should connect these concepts around one missing object:
 delegated, resumable agent work.
 
 It should add value only where existing tools are too coarse:
@@ -42,18 +42,18 @@ It should add value only where existing tools are too coarse:
 
 If an interaction is just a human discussion, Conpherence is enough. If it is
 just a task update, Maniphest comments are enough. If it is just a build result,
-Harbormaster is enough. `AgentThread` is justified only when external agent work
+Harbormaster is enough. `PhalanxThread` is justified only when external agent work
 needs to be observed, resumed, answered, approved, or stopped as an ongoing
 unit.
 
 ## Candidate Objects
 
-- `AgentThread`
-- `AgentThreadFrame`
-- `AgentArtifact`
-- `AgentQuestion`
-- `AgentRequiredAction`
-- `AgentBackendRef`
+- `PhalanxThread`
+- `PhalanxFrame`
+- `PhalanxArtifact`
+- `PhalanxQuestion`
+- `PhalanxRequiredAction`
+- `PhalanxBackendRef`
 
 ## Timeline Frames
 
@@ -111,13 +111,13 @@ Suggested action kinds:
 Artifacts should be first-class work products, not log snippets.
 
 Artifact content should use existing Phorge storage and object infrastructure
-where possible. `AgentArtifact` should store meaning, lifecycle, and provenance;
+where possible. `PhalanxArtifact` should store meaning, lifecycle, and provenance;
 Files, Pastes, Pholio, Differential, Harbormaster, and other objects should
 store or review the underlying content.
 
 In short:
 
-> Files store artifact content; AgentArtifact stores artifact meaning.
+> Files store artifact content; PhalanxArtifact stores artifact meaning.
 
 Initial artifact kinds:
 
@@ -131,7 +131,7 @@ Initial artifact kinds:
 - `implementation_result`
 - `backend_resume_snapshot`
 
-Suggested `AgentArtifact` links:
+Suggested `PhalanxArtifact` links:
 
 - `file_phid` for screenshots, logs, generated reports, and downloadable
   outputs.
@@ -144,7 +144,7 @@ Suggested `AgentArtifact` links:
 
 Examples:
 
-- A screenshot can be an `AgentArtifact` with `artifact_kind=screenshot` and a
+- A screenshot can be a `PhalanxArtifact` with `artifact_kind=screenshot` and a
   `file_phid`.
 - A visual mockup that needs review can point at a Pholio object with
   `object_phid`.
@@ -172,9 +172,9 @@ Use as a patch queue for small core changes.
 
 ### phorge-agent
 
-Use for the module itself:
+Use for the Phalanx module itself:
 
-- agent thread object model,
+- Phalanx thread object model,
 - UI,
 - timeline frames,
 - pending questions,

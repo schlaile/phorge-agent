@@ -48,7 +48,7 @@ and agents.
 These are complementary rather than competing:
 
 - MCP gives agents access to Phorge.
-- `phorge-agent` should make agent work visible, steerable, and auditable in
+- Phalanx should make agent work visible, steerable, and auditable in
   Phorge.
 
 Examples:
@@ -77,7 +77,7 @@ Example:
 
 ## Scope Boundary
 
-`phorge-agent` should be a generic Phorge module. Alicia-specific details should
+Phalanx should be a generic Phorge module. Alicia-specific details should
 remain outside it:
 
 - concrete harness execution,

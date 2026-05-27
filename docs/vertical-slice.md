@@ -1,6 +1,6 @@
 # Vertical Slice
 
-This document defines the first useful `phorge-agent` slice.
+This document defines the first useful Phalanx slice.
 
 The goal is not to build a complete agent platform. The goal is to prove that a
 Phorge-native agent thread adds value beyond ordinary Maniphest comments,
@@ -8,7 +8,7 @@ Conpherence chat, Harbormaster builds, Pholio mockups, and Differential review.
 
 ## Guiding Question
 
-What is the smallest Phorge-native AgentThread that is obviously better than a
+What is the smallest Phorge-native PhalanxThread that is obviously better than a
 comment stream?
 
 ## V1 Scenario
@@ -16,7 +16,7 @@ comment stream?
 A user asks Alicia to investigate or implement something from a Maniphest task.
 Alicia starts an external session and reaches a decision point:
 
-- the task has one active AgentThread,
+- the task has one active PhalanxThread,
 - the thread is attached to the task,
 - the thread status is `awaiting_chat`,
 - the agent asks a product or implementation question,
@@ -150,11 +150,11 @@ The API can be refined later into Conduit methods if the module proves useful.
 
 Alicia can produce the V1 data from its current plan snapshot:
 
-- `execution_session_overviews[]` maps to AgentThread summaries.
-- `pending_question` maps to AgentQuestion.
-- `artifacts[]` plus full `execution_session_artifacts[]` map to AgentArtifact.
-- backend fields map to AgentBackendRef.
-- session events map to AgentThreadFrame.
+- `execution_session_overviews[]` maps to PhalanxThread summaries.
+- `pending_question` maps to PhalanxQuestion.
+- `artifacts[]` plus full `execution_session_artifacts[]` map to PhalanxArtifact.
+- backend fields map to PhalanxBackendRef.
+- session events map to PhalanxFrame.
 
 The first adapter does not need to mirror every Alicia event. It should select
 frames that help a human understand and steer the work.
@@ -183,7 +183,7 @@ raw log or searching task comments:
 - Can this work be resumed?
 - Which external session does this refer to?
 
-If those questions are answered clearly, the AgentThread concept has justified
+If those questions are answered clearly, the PhalanxThread concept has justified
 itself.
 
 ## Next Implementation Step

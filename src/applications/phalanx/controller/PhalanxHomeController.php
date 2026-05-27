@@ -1,19 +1,19 @@
 <?php
 
-final class PhorgeAgentHomeController extends PhorgeAgentController {
+final class PhalanxHomeController extends PhalanxController {
 
   public function handleRequest(AphrontRequest $request) {
-    $title = pht('Agent Threads');
+    $title = pht('Phalanx');
 
     $content = id(new PHUIObjectBoxView())
-      ->setHeaderText(pht('Agent Threads'))
+      ->setHeaderText(pht('Phalanx'))
       ->appendChild(
         phutil_tag(
           'p',
           array(),
           pht(
-            'This module is an early provider-neutral work surface for '.
-            'delegated, resumable agent work in Phorge.')));
+            'Phalanx is an early provider-neutral work surface for delegated, '.
+            'resumable agent work in Phorge.')));
 
     $content->appendChild(
       phutil_tag(

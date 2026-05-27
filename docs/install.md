@@ -1,6 +1,6 @@
 # Installation
 
-`phorge-agent` is intended to be loaded as an external Phorge library.
+Phalanx is intended to be loaded as an external Phorge library.
 
 ## Local Development
 
@@ -20,7 +20,7 @@ cd /path/to/phorge
 Then visit:
 
 ```text
-/agent/
+/phalanx/
 ```
 
 ## Library Map
@@ -38,7 +38,7 @@ arc liberate src
 ## Storage
 
 The first skeleton has no storage patches. Future versions that add
-`AgentThread`, `AgentArtifact`, or related objects should provide a library-local
+`PhalanxThread`, `PhalanxArtifact`, or related objects should provide a library-local
 `PhabricatorSQLPatchList` and then run:
 
 ```sh

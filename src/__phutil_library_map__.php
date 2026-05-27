@@ -11,14 +11,14 @@
 phutil_register_library_map(array(
   '__library_version__' => 2,
   'class' => array(
-    'PhorgeAgentApplication' => 'applications/agent/application/PhorgeAgentApplication.php',
-    'PhorgeAgentController' => 'applications/agent/controller/PhorgeAgentController.php',
-    'PhorgeAgentHomeController' => 'applications/agent/controller/PhorgeAgentHomeController.php',
+    'PhalanxApplication' => 'applications/phalanx/application/PhalanxApplication.php',
+    'PhalanxController' => 'applications/phalanx/controller/PhalanxController.php',
+    'PhalanxHomeController' => 'applications/phalanx/controller/PhalanxHomeController.php',
   ),
   'function' => array(),
   'xmap' => array(
-    'PhorgeAgentApplication' => 'PhabricatorApplication',
-    'PhorgeAgentController' => 'PhabricatorController',
-    'PhorgeAgentHomeController' => 'PhorgeAgentController',
+    'PhalanxApplication' => 'PhabricatorApplication',
+    'PhalanxController' => 'PhabricatorController',
+    'PhalanxHomeController' => 'PhalanxController',
   ),
 ));
