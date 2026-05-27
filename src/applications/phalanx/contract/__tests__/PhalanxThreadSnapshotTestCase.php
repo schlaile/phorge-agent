@@ -165,4 +165,42 @@ final class PhalanxThreadSnapshotTestCase extends PhutilTestCase {
     $this->assertCaught(InvalidArgumentException::class, $caught);
   }
 
+  public function testReplySnapshotNormalizesFields() {
+    $snapshot = PhalanxReplySnapshot::newFromDictionary(
+      array(
+        'external_thread_id' => 'session-1',
+        'action_kind' => 'delegate_instruction',
+        'message_text' => 'Use variant B and continue.',
+        'close_question' => false,
+        'properties' => array(
+          'source' => 'unit',
+        ),
+      ));
+
+    $this->assertEqual(null, $snapshot->getThreadID());
+    $this->assertEqual('session-1', $snapshot->getExternalThreadID());
+    $this->assertEqual('delegate_instruction', $snapshot->getActionKind());
+    $this->assertEqual(
+      'Use variant B and continue.',
+      $snapshot->getMessageText());
+    $this->assertFalse($snapshot->shouldCloseQuestion());
+
+    $properties = $snapshot->getProperties();
+    $this->assertEqual('unit', $properties['source']);
+  }
+
+  public function testReplySnapshotRequiresThreadReference() {
+    $caught = null;
+    try {
+      PhalanxReplySnapshot::newFromDictionary(
+        array(
+          'action_kind' => 'delegate_instruction',
+        ));
+    } catch (Exception $ex) {
+      $caught = $ex;
+    }
+
+    $this->assertCaught(InvalidArgumentException::class, $caught);
+  }
+
 }

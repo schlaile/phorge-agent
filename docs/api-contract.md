@@ -123,7 +123,7 @@ The method returns visible threads only. Visibility is determined by the target
 user can not see.
 
 Each result includes the thread fields, `properties`, the active
-`pending_question` if one exists, and current `artifacts`.
+`pending_question` if one exists, current `artifacts`, and recorded `replies`.
 
 ## Frame Append
 
@@ -181,12 +181,26 @@ agent session.
 
 Phorge sends user replies or control actions back to the external control plane.
 
+Initial Conduit method:
+
+```text
+phalanx.thread.reply
+```
+
+The method records the reply in Phorge. External control planes can poll
+`phalanx.thread.search` for recorded replies until a delivery callback is added.
+The token user is stored as `author_phid` and must be able to edit the target
+`object_phid`.
+
 ```json
 {
   "external_thread_id": "session-123",
-  "author_phid": "PHID-USER-owner",
   "message_text": "Use variant B and continue.",
-  "action_kind": "delegate_instruction"
+  "action_kind": "delegate_instruction",
+  "close_question": true,
+  "properties": {
+    "client": "phorge-ui"
+  }
 }
 ```
 

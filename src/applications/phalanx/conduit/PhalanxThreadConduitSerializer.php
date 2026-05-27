@@ -4,6 +4,7 @@ final class PhalanxThreadConduitSerializer extends Phobject {
 
   private $questions = array();
   private $artifacts = array();
+  private $replies = array();
 
   public function setQuestions(array $questions) {
     $this->questions = mgroup($questions, 'getThreadID');
@@ -12,6 +13,11 @@ final class PhalanxThreadConduitSerializer extends Phobject {
 
   public function setArtifacts(array $artifacts) {
     $this->artifacts = mgroup($artifacts, 'getThreadID');
+    return $this;
+  }
+
+  public function setReplies(array $replies) {
+    $this->replies = mgroup($replies, 'getThreadID');
     return $this;
   }
 
@@ -36,6 +42,8 @@ final class PhalanxThreadConduitSerializer extends Phobject {
       'pending_question' => $this->serializeQuestion($question),
       'artifacts' => $this->serializeArtifacts(
         idx($this->artifacts, $thread->getID(), array())),
+      'replies' => $this->serializeReplies(
+        idx($this->replies, $thread->getID(), array())),
     );
   }
 
@@ -74,6 +82,24 @@ final class PhalanxThreadConduitSerializer extends Phobject {
         'payload' => $artifact->getPayload(),
         'date_created' => $artifact->getDateCreated(),
         'date_modified' => $artifact->getDateModified(),
+      );
+    }
+
+    return $results;
+  }
+
+  private function serializeReplies(array $replies) {
+    $results = array();
+    foreach ($replies as $reply) {
+      $results[] = array(
+        'id' => $reply->getID(),
+        'question_id' => $reply->getQuestionID(),
+        'author_phid' => $reply->getAuthorPHID(),
+        'action_kind' => $reply->getActionKind(),
+        'message_text' => $reply->getMessageText(),
+        'properties' => $reply->getProperties(),
+        'date_created' => $reply->getDateCreated(),
+        'date_modified' => $reply->getDateModified(),
       );
     }
 

@@ -67,6 +67,9 @@ The first implementation now provides:
 - a compact Maniphest curtain panel for attached Phalanx threads,
 - a simple `/phalanx/thread/{id}/` detail view,
 - a `phalanx.thread.upsert` Conduit method,
+- a `phalanx.thread.search` Conduit method for polling visible thread state,
+- a `phalanx.thread.reply` Conduit method for recording user replies and
+  control actions,
 - an Alicia-shaped fixture in
   [`docs/fixtures/alicia-phalanx-thread.json`](fixtures/alicia-phalanx-thread.json).
 
