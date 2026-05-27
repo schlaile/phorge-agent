@@ -71,7 +71,8 @@ work is to define:
 
 The current code includes the first Phorge application skeleton, storage
 objects for threads, questions, and artifacts, a SQL patch list, a simple thread
-view, and a Maniphest curtain panel for attached threads.
+view, a Maniphest curtain panel for attached threads, and a minimal
+`phalanx.thread.upsert` Conduit method for external control planes.
 
 ## Documents
 

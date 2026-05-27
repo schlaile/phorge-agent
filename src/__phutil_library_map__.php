@@ -13,6 +13,7 @@ phutil_register_library_map(array(
   'class' => array(
     'PhalanxApplication' => 'applications/phalanx/application/PhalanxApplication.php',
     'PhalanxArtifact' => 'applications/phalanx/storage/PhalanxArtifact.php',
+    'PhalanxConduitAPIMethod' => 'applications/phalanx/conduit/PhalanxConduitAPIMethod.php',
     'PhalanxController' => 'applications/phalanx/controller/PhalanxController.php',
     'PhalanxDAO' => 'applications/phalanx/storage/PhalanxDAO.php',
     'PhalanxHomeController' => 'applications/phalanx/controller/PhalanxHomeController.php',
@@ -21,12 +22,15 @@ phutil_register_library_map(array(
     'PhalanxSQLPatchList' => 'applications/phalanx/storage/PhalanxSQLPatchList.php',
     'PhalanxThread' => 'applications/phalanx/storage/PhalanxThread.php',
     'PhalanxThreadQuery' => 'applications/phalanx/query/PhalanxThreadQuery.php',
+    'PhalanxThreadUpsertConduitAPIMethod' => 'applications/phalanx/conduit/PhalanxThreadUpsertConduitAPIMethod.php',
+    'PhalanxThreadUpsertEngine' => 'applications/phalanx/engine/PhalanxThreadUpsertEngine.php',
     'PhalanxThreadViewController' => 'applications/phalanx/controller/PhalanxThreadViewController.php',
   ),
   'function' => array(),
   'xmap' => array(
     'PhalanxApplication' => 'PhabricatorApplication',
     'PhalanxArtifact' => 'PhalanxDAO',
+    'PhalanxConduitAPIMethod' => 'ConduitAPIMethod',
     'PhalanxController' => 'PhabricatorController',
     'PhalanxDAO' => 'PhabricatorLiskDAO',
     'PhalanxHomeController' => 'PhalanxController',
@@ -35,6 +39,8 @@ phutil_register_library_map(array(
     'PhalanxSQLPatchList' => 'PhabricatorSQLPatchList',
     'PhalanxThread' => 'PhalanxDAO',
     'PhalanxThreadQuery' => 'PhabricatorOffsetPagedQuery',
+    'PhalanxThreadUpsertConduitAPIMethod' => 'PhalanxConduitAPIMethod',
+    'PhalanxThreadUpsertEngine' => 'Phobject',
     'PhalanxThreadViewController' => 'PhalanxController',
   ),
 ));

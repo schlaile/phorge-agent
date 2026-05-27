@@ -7,6 +7,23 @@ The contract should remain provider-neutral.
 
 ## Thread Upsert
 
+Initial Conduit method:
+
+```text
+phalanx.thread.upsert
+```
+
+The method accepts the same top-level shape as the Alicia fixture:
+
+- `thread`: required thread map,
+- `pending_question`: optional active question map,
+- `clear_pending_question`: optional boolean,
+- `artifacts`: optional list of artifact maps.
+
+The first implementation is intentionally an upsert, not an append-only event
+stream. It writes current Phorge-facing state from an external control plane
+snapshot.
+
 External control plane creates or updates a thread for an object.
 
 ```json
@@ -18,6 +35,18 @@ External control plane creates or updates a thread for an object.
   "agent_label": "alicia",
   "backend_kind": "codex_exec",
   "backend_thread_id": "thread-xyz"
+}
+```
+
+Return shape:
+
+```json
+{
+  "id": 12,
+  "uri": "https://phorge.example.com/phalanx/thread/12/",
+  "external_thread_id": "session-123",
+  "object_phid": "PHID-TASK-abc",
+  "status": "awaiting_chat"
 }
 ```
 

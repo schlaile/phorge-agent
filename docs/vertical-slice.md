@@ -66,6 +66,7 @@ The first implementation now provides:
 - a library-local SQL patch list,
 - a compact Maniphest curtain panel for attached Phalanx threads,
 - a simple `/phalanx/thread/{id}/` detail view,
+- a `phalanx.thread.upsert` Conduit method,
 - an Alicia-shaped fixture in
   [`docs/fixtures/alicia-phalanx-thread.json`](fixtures/alicia-phalanx-thread.json).
 
@@ -201,6 +202,5 @@ Before writing Phorge module code, define a concrete example payload generated
 from an Alicia `GET /plans/{id}/snapshot` response. That payload should become
 the fixture for the first UI spike.
 
-This payload now exists as `docs/fixtures/alicia-phalanx-thread.json`. The next
-implementation step is an import/upsert path that writes this shape into the
-Phalanx tables.
+This payload now exists as `docs/fixtures/alicia-phalanx-thread.json`, and the
+`phalanx.thread.upsert` method accepts the same shape.
