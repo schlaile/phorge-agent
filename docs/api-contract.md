@@ -125,6 +125,15 @@ user can not see.
 Each result includes the thread fields, `properties`, the active
 `pending_question` if one exists, current `artifacts`, and recorded `replies`.
 
+Thread properties may include delivery configuration for outbound replies:
+
+- `delivery_callback_uri`: HTTPS endpoint for reply/control-action delivery.
+- `delivery_retry_mode`: `never` or `forever`.
+- `delivery_hmac_key`: optional shared secret used to sign delivery payloads.
+
+`delivery_hmac_key` is stored for delivery but is not returned by
+`phalanx.thread.search`.
+
 ## Frame Append
 
 External control plane appends structured timeline frames.
@@ -187,10 +196,19 @@ Initial Conduit method:
 phalanx.thread.reply
 ```
 
-The method records the reply in Phorge. External control planes can poll
-`phalanx.thread.search` for recorded replies until a delivery callback is added.
+The method records the reply in Phorge. If the thread has
+`delivery_callback_uri`, Phalanx queues an outbound delivery. External control
+planes can still poll `phalanx.thread.search` for recorded replies as a fallback.
 The token user is stored as `author_phid` and must be able to edit the target
 `object_phid`.
+
+Replies use a delivery-state model inspired by chat read receipts:
+
+- `recorded`: one check; the reply is safely stored in Phorge.
+- `queued`: delivery to the external control plane is queued.
+- `sent`: two checks; the callback returned a successful HTTP response.
+- `acknowledged`: the external control plane confirmed processing.
+- `failed`: delivery failed, but the reply remains stored and pollable.
 
 ```json
 {

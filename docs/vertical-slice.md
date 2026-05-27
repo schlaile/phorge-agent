@@ -70,6 +70,7 @@ The first implementation now provides:
 - a `phalanx.thread.search` Conduit method for polling visible thread state,
 - a `phalanx.thread.reply` Conduit method for recording user replies and
   control actions,
+- an outbound reply-delivery outbox with recorded/queued/sent/failed status,
 - an Alicia-shaped fixture in
   [`docs/fixtures/alicia-phalanx-thread.json`](fixtures/alicia-phalanx-thread.json).
 

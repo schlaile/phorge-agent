@@ -36,7 +36,7 @@ final class PhalanxThreadConduitSerializer extends Phobject {
       'backend_kind' => $thread->getBackendKind(),
       'backend_thread_id' => $thread->getBackendThreadID(),
       'external_resume_ref' => $thread->getExternalResumeRef(),
-      'properties' => $thread->getProperties(),
+      'properties' => $this->serializeThreadProperties($thread),
       'date_created' => $thread->getDateCreated(),
       'date_modified' => $thread->getDateModified(),
       'pending_question' => $this->serializeQuestion($question),
@@ -97,6 +97,7 @@ final class PhalanxThreadConduitSerializer extends Phobject {
         'author_phid' => $reply->getAuthorPHID(),
         'action_kind' => $reply->getActionKind(),
         'message_text' => $reply->getMessageText(),
+        'delivery_status' => $reply->getDeliveryStatus(),
         'properties' => $reply->getProperties(),
         'date_created' => $reply->getDateCreated(),
         'date_modified' => $reply->getDateModified(),
@@ -104,6 +105,12 @@ final class PhalanxThreadConduitSerializer extends Phobject {
     }
 
     return $results;
+  }
+
+  private function serializeThreadProperties(PhalanxThread $thread) {
+    $properties = $thread->getProperties();
+    unset($properties['delivery_hmac_key']);
+    return $properties;
   }
 
 }

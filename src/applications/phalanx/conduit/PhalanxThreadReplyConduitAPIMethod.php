@@ -48,6 +48,7 @@ final class PhalanxThreadReplyConduitAPIMethod
       'question_id' => $reply->getQuestionID(),
       'author_phid' => $reply->getAuthorPHID(),
       'action_kind' => $reply->getActionKind(),
+      'delivery_status' => $reply->getDeliveryStatus(),
     );
   }
 

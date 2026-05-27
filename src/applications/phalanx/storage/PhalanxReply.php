@@ -2,11 +2,18 @@
 
 final class PhalanxReply extends PhalanxDAO {
 
+  const DELIVERY_RECORDED = 'recorded';
+  const DELIVERY_QUEUED = 'queued';
+  const DELIVERY_SENT = 'sent';
+  const DELIVERY_ACKNOWLEDGED = 'acknowledged';
+  const DELIVERY_FAILED = 'failed';
+
   protected $threadID;
   protected $questionID;
   protected $authorPHID;
   protected $actionKind;
   protected $messageText;
+  protected $deliveryStatus;
   protected $properties = array();
 
   public function getTableName() {
@@ -24,6 +31,7 @@ final class PhalanxReply extends PhalanxDAO {
         'authorPHID' => 'phid',
         'actionKind' => 'text64',
         'messageText' => 'text?',
+        'deliveryStatus' => 'text32',
       ),
       self::CONFIG_KEY_SCHEMA => array(
         'key_thread' => array(
