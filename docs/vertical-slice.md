@@ -60,6 +60,15 @@ The full thread view can initially be simple:
 - pending question section,
 - raw external references hidden behind details.
 
+The first implementation now provides:
+
+- `PhalanxThread`, `PhalanxQuestion`, and `PhalanxArtifact` storage objects,
+- a library-local SQL patch list,
+- a compact Maniphest curtain panel for attached Phalanx threads,
+- a simple `/phalanx/thread/{id}/` detail view,
+- an Alicia-shaped fixture in
+  [`docs/fixtures/alicia-phalanx-thread.json`](fixtures/alicia-phalanx-thread.json).
+
 ## Minimum Thread Data
 
 The first thread record needs:
@@ -191,3 +200,7 @@ itself.
 Before writing Phorge module code, define a concrete example payload generated
 from an Alicia `GET /plans/{id}/snapshot` response. That payload should become
 the fixture for the first UI spike.
+
+This payload now exists as `docs/fixtures/alicia-phalanx-thread.json`. The next
+implementation step is an import/upsert path that writes this shape into the
+Phalanx tables.

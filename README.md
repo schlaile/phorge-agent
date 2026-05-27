@@ -69,6 +69,10 @@ work is to define:
 - an API contract for external agent control planes,
 - the minimal Phorge core hooks needed for a clean module.
 
+The current code includes the first Phorge application skeleton, storage
+objects for threads, questions, and artifacts, a SQL patch list, a simple thread
+view, and a Maniphest curtain panel for attached threads.
+
 ## Documents
 
 - [Prior Art and Scope](docs/prior-art.md)

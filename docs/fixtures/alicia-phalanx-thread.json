@@ -1,0 +1,49 @@
+{
+  "thread": {
+    "external_thread_id": "alicia-session-123",
+    "object_phid": "PHID-TASK-example",
+    "title": "Investigate payment fallback",
+    "status": "awaiting_chat",
+    "agent_label": "alicia",
+    "backend_kind": "codex_exec",
+    "backend_thread_id": "codex-thread-xyz",
+    "external_resume_ref": "alicia://plans/42/sessions/alicia-session-123"
+  },
+  "pending_question": {
+    "question_kind": "implementation_clarification",
+    "prompt": "Should the fallback retry use the legacy endpoint or the new gateway?",
+    "primary_contact_phid": "PHID-USER-owner",
+    "response_channel": "chat",
+    "required_action_kind": "reply_in_chat",
+    "required_action": "Choose one endpoint and tell Alicia to continue.",
+    "default_action": "wait_for_response"
+  },
+  "artifacts": [
+    {
+      "external_artifact_id": "artifact-test-run",
+      "artifact_kind": "test_run",
+      "label": "Backend test run",
+      "summary": "go test ./... passed",
+      "file_phid": "PHID-FILE-log",
+      "object_phid": null,
+      "external_ref": "alicia://plans/42/artifacts/artifact-test-run",
+      "payload": {
+        "status": "passed",
+        "command": "go test ./..."
+      }
+    },
+    {
+      "external_artifact_id": "artifact-screenshot",
+      "artifact_kind": "screenshot",
+      "label": "Checkout error state",
+      "summary": "Browser check screenshot after forcing gateway timeout.",
+      "file_phid": "PHID-FILE-shot",
+      "object_phid": null,
+      "external_ref": "alicia://plans/42/artifacts/artifact-screenshot",
+      "payload": {
+        "viewport": "desktop",
+        "browser": "chromium"
+      }
+    }
+  ]
+}

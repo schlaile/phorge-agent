@@ -26,6 +26,7 @@ final class PhalanxApplication extends PhabricatorApplication {
     return array(
       '/phalanx/' => array(
         '' => 'PhalanxHomeController',
+        'thread/(?P<id>[1-9]\d*)/' => 'PhalanxThreadViewController',
       ),
     );
   }

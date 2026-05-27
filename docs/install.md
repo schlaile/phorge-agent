@@ -37,9 +37,9 @@ arc liberate src
 
 ## Storage
 
-The first skeleton has no storage patches. Future versions that add
-`PhalanxThread`, `PhalanxArtifact`, or related objects should provide a library-local
-`PhabricatorSQLPatchList` and then run:
+The current module ships with `PhalanxThread`, `PhalanxArtifact`, and
+`PhalanxQuestion` storage plus a library-local `PhabricatorSQLPatchList`. After
+loading the library, run:
 
 ```sh
 cd /path/to/phorge
