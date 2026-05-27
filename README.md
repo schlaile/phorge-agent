@@ -75,6 +75,7 @@ work is to define:
 - [Module Scope](docs/module-scope.md)
 - [Vertical Slice](docs/vertical-slice.md)
 - [API Contract Sketch](docs/api-contract.md)
+- [Installation](docs/install.md)
 
 ## Relationship to Alicia
 
