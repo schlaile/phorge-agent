@@ -73,6 +73,7 @@ work is to define:
 
 - [Prior Art and Scope](docs/prior-art.md)
 - [Module Scope](docs/module-scope.md)
+- [Vertical Slice](docs/vertical-slice.md)
 - [API Contract Sketch](docs/api-contract.md)
 
 ## Relationship to Alicia
