@@ -11,7 +11,7 @@ of what an external agent control plane is doing.
 ## Relationship to Existing Phorge Tools
 
 `phorge-agent` should not replace Maniphest, Differential, Conpherence,
-Harbormaster, Feed, Herald, Files, Pastes, or Conduit.
+Harbormaster, Feed, Herald, Files, Pastes, Pholio, or Conduit.
 
 Those tools already model important parts of work:
 
@@ -22,6 +22,7 @@ Those tools already model important parts of work:
 - Feed and transactions record object history.
 - Herald automates rule-based workflow.
 - Files and Pastes hold supporting material.
+- Pholio stores and reviews visual mockups.
 - Conduit connects external systems.
 
 An `AgentThread` should connect these concepts around one missing object:
@@ -109,15 +110,50 @@ Suggested action kinds:
 
 Artifacts should be first-class work products, not log snippets.
 
+Artifact content should use existing Phorge storage and object infrastructure
+where possible. `AgentArtifact` should store meaning, lifecycle, and provenance;
+Files, Pastes, Pholio, Differential, Harbormaster, and other objects should
+store or review the underlying content.
+
+In short:
+
+> Files store artifact content; AgentArtifact stores artifact meaning.
+
 Initial artifact kinds:
 
 - `test_run`
 - `draft_change`
 - `screenshot`
 - `browser_check`
+- `visual_review`
+- `mockup`
 - `prototype_result`
 - `implementation_result`
 - `backend_resume_snapshot`
+
+Suggested `AgentArtifact` links:
+
+- `file_phid` for screenshots, logs, generated reports, and downloadable
+  outputs.
+- `object_phid` for related Phorge objects such as Pholio mockups,
+  Differential revisions, Harbormaster builds, Pastes, or Files.
+- `external_uri` or `external_ref` for content retained by an external control
+  plane.
+- `payload_json` for small structured summaries that do not warrant a separate
+  object.
+
+Examples:
+
+- A screenshot can be an `AgentArtifact` with `artifact_kind=screenshot` and a
+  `file_phid`.
+- A visual mockup that needs review can point at a Pholio object with
+  `object_phid`.
+- A test run can store summary data in `payload_json` and link to a File or
+  Harbormaster build for full output.
+- A draft patch can link to a Differential revision, Paste, or File depending
+  on how reviewable it is.
+- A resume snapshot can remain a small structured payload or become a File if it
+  is large.
 
 ## Repository Boundaries
 

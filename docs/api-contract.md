@@ -51,9 +51,27 @@ External control plane publishes work products.
   "artifact_kind": "test_run",
   "label": "Test run",
   "summary": "go test ./... passed",
-  "content_ref": "alicia://sessions/session-123/artifacts/artifact-456"
+  "file_phid": "PHID-FILE-log",
+  "object_phid": "PHID-HMBD-build",
+  "external_ref": "alicia://sessions/session-123/artifacts/artifact-456",
+  "payload": {
+    "status": "passed",
+    "command": "go test ./..."
+  }
 }
 ```
+
+Artifact payloads should not duplicate Phorge storage. Large or reviewable
+content should live in existing Phorge objects:
+
+- Files for blobs, screenshots, logs, reports, and generated outputs.
+- Pholio for visual mockups or reviewable screenshots.
+- Differential for reviewable code changes.
+- Harbormaster for build or test results.
+- Pastes for text artifacts that should be readable as standalone documents.
+
+The agent artifact record should explain what the linked content means in the
+agent session.
 
 ## User Reply
 

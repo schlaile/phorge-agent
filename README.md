@@ -28,7 +28,8 @@ Phorge already has strong tools for work coordination:
 - Feed and object transactions provide audit history.
 - Harbormaster tracks builds and checks.
 - Herald automates workflow rules.
-- Files, Pastes, and related objects can store supporting material.
+- Files, Pastes, Pholio, and related objects can store supporting material and
+  reviewable artifacts.
 - Conduit lets external systems integrate with Phorge.
 
 `phorge-agent` should not duplicate these tools. It should fill a narrower gap:
